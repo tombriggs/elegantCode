@@ -2,6 +2,7 @@ import sys
 import subprocess
 import lizard
 import json
+import os
 from pygount import SourceAnalysis
 
 
@@ -79,10 +80,18 @@ def generate_stats(name):
 
 if __name__ == '__main__':
     # get the filename from the command line arguments
-    if len(sys.argv) < 2:
-        print("Usage: python codeStatsGenerator.py <filename>")
+    if len(sys.argv) < 3:
+        print("Usage: python codeStatsGenerator.py <label> <filename>")
         sys.exit(1)
-    file_path = sys.argv[1]
+    file_label = sys.argv[1]
+    file_path = sys.argv[2]
     file_stats = generate_stats(file_path)
-    print(file_stats)
+
+    file_stats_header = "filesource,filename,"
+    file_stats_header += ','.join(str(x) for x in file_stats.keys())
+    print(file_stats_header)
+
+    file_stats_str = "\"" + file_label + "\",\"" + os.path.basename(file_path) + "\","
+    file_stats_str += ','.join(str(x) for x in file_stats.values())
+    print(file_stats_str)
 
