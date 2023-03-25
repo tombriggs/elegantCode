@@ -55,14 +55,24 @@ def generate_stats(name):
   #  print(f.__dict__)
 
   func_ccs = [f.cyclomatic_complexity for f in liz.function_list]
-  file_stats["min_func_cc"] = min(func_ccs)
-  file_stats["max_func_cc"] = max(func_ccs)
-  file_stats["avg_func_cc"] = sum(func_ccs)/len(func_ccs)
+  if func_ccs:
+    file_stats["min_func_cc"] = min(func_ccs)
+    file_stats["max_func_cc"] = max(func_ccs)
+    file_stats["avg_func_cc"] = sum(func_ccs)/len(func_ccs)
+  else:
+    file_stats["min_func_cc"] = None
+    file_stats["max_func_cc"] = None
+    file_stats["avg_func_cc"] = None
 
   token_counts = [f.token_count for f in liz.function_list]
-  file_stats["min_token_count"] = min(token_counts)
-  file_stats["max_token_count"] = max(token_counts)
-  file_stats["avg_token_count"] = sum(token_counts)/len(token_counts)
+  if token_counts:
+    file_stats["min_token_count"] = min(token_counts)
+    file_stats["max_token_count"] = max(token_counts)
+    file_stats["avg_token_count"] = sum(token_counts)/len(token_counts)
+  else:
+    file_stats["min_token_count"] = None
+    file_stats["max_token_count"] = None
+    file_stats["avg_token_count"] = None
 
   # TODO: Do we need to capture top_nesting_level, fan_in, fan_out, general_fan_out?
   # What are they??
@@ -80,18 +90,23 @@ def generate_stats(name):
 
 if __name__ == '__main__':
     # get the filename from the command line arguments
-    if len(sys.argv) < 3:
+    num_args = len(sys.argv)
+    if num_args < 3:
         print("Usage: python codeStatsGenerator.py <label> <filename>")
         sys.exit(1)
     file_label = sys.argv[1]
     file_path = sys.argv[2]
+
+    print_header = (num_args >= 4 and sys.argv[3] == "--header")
+    
     file_stats = generate_stats(file_path)
 
-    file_stats_header = "filesource,filename,"
-    file_stats_header += ','.join(str(x) for x in file_stats.keys())
-    print(file_stats_header)
+    if print_header:
+      file_stats_header = "filesource,filename,"
+      file_stats_header += ','.join(str(x) for x in file_stats.keys())
+      print(file_stats_header)
 
     file_stats_str = "\"" + file_label + "\",\"" + os.path.basename(file_path) + "\","
-    file_stats_str += ','.join(str(x) for x in file_stats.values())
+    file_stats_str += ','.join(str(x) if x is not None else "" for x in file_stats.values())
     print(file_stats_str)
 

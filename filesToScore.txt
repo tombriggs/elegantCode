@@ -1,0 +1,51 @@
+nayuki-Project-Euler-solutions Project-Euler-solutions/java/p001.java
+nayuki-Project-Euler-solutions Project-Euler-solutions/java/p002.java
+nayuki-Project-Euler-solutions Project-Euler-solutions/java/p003.java
+
+nayuki-Project-Euler-solutions Project-Euler-solutions/python/p001.py
+nayuki-Project-Euler-solutions Project-Euler-solutions/python/p002.py
+nayuki-Project-Euler-solutions Project-Euler-solutions/python/p003.py
+
+AlgoSolutions AlgoSolutions/project-euler/python/pe001.py
+AlgoSolutions AlgoSolutions/project-euler/python/pe002.py
+AlgoSolutions AlgoSolutions/project-euler/python/pe003.py
+
+hacktoberfest-projecteuler hacktoberfest-projecteuler/solutions/problem-1/solution.java
+hacktoberfest-projecteuler hacktoberfest-projecteuler/solutions/problem-1/solution.c
+hacktoberfest-projecteuler hacktoberfest-projecteuler/solutions/problem-1/solution.py
+
+stbrumme euler/euler-0001.cpp
+stbrumme euler/euler-0002.cpp
+stbrumme euler/euler-0003.cpp
+
+polyglot-euler polyglot-euler/src/001/p001.c
+polyglot-euler polyglot-euler/src/001/p001.cpp
+polyglot-euler polyglot-euler/src/001/p001.java
+polyglot-euler polyglot-euler/src/001/p001.py
+
+polyglot-euler polyglot-euler/src/002/p002.cpp
+polyglot-euler polyglot-euler/src/002/p002.py
+
+polyglot-euler polyglot-euler/src/003/p003.cpp
+polyglot-euler polyglot-euler/src/003/p003.py
+
+Algorithms-Playground Algorithms-Playground/src/euler/problem_001/Solution_1.java
+Algorithms-Playground Algorithms-Playground/src/euler/problem_002/Solution_1.java
+Algorithms-Playground Algorithms-Playground/src/euler/problem_003/Solution_1.java
+
+deniscostadsc playground/solutions/project-euler/001/001.c
+deniscostadsc playground/solutions/project-euler/001/001.cpp
+deniscostadsc playground/solutions/project-euler/001/001.py
+
+#Harmon758 Project-Euler/001\ -\ Multiples\ of\ 3\ and\ 5/ProjectEuler+ Challenge #1 Solution.c
+#Harmon758 Project-Euler/001\ -\ Multiples\ of\ 3\ and\ 5/ProjectEuler+ Challenge #1 Solution.py
+#Harmon758 Project-Euler/002\ -\ Even\ Fibonacci\ numbers/ProjectEuler+ Challenge #2 Solution.c
+#Harmon758 Project-Euler/002\ -\ Even\ Fibonacci\ numbers/ProjectEuler+ Challenge #2 Solution.py
+#Harmon758 Project-Euler/003\ -\ Largest\ prime\ factor/ProjectEuler+ Challenge #2 Solution.c
+#Harmon758 Project-Euler/003\ -\ Largest\ prime\ factor/ProjectEuler+ Challenge #2 Solution.py
+
+c-code-katas c-code-katas/Eular/sum_of_multiples_of_3_5.c
+c-code-katas c-code-katas/Eular/fibonacci_series.c
+
+# ^^^ This is #11
+
