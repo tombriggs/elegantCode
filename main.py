@@ -1,6 +1,8 @@
 import sys
-import os
 import complexityStatsGen
+import processHumanRatings
+
+problem_complexities = {1: 1, 2: 1, 54: 2, 74: 3}
 
 # open the file in read mode
 #with open(file_path, "r") as file:
@@ -27,34 +29,11 @@ import complexityStatsGen
 if __name__ == '__main__':
     # get the directory name from the command line arguments
     num_args = len(sys.argv)
-    if num_args < 2:
-        print("Usage: python complexityStatsGenAll.py <dirname>")
+    if num_args < 4:
+        print("Usage: python elegantCode.py [-c|-h] [<code-samples-dirname>|<human-ratings-dirname>] [output file|complexity stats files]")
         sys.exit(1)
-    file_path = sys.argv[1]
 
-    samples_dict = {}
-
-    for root, dirs, files in os.walk(file_path):
-        for name in files:
-            if name == 'MANIFEST':
-                #print(os.path.join(root, name))
-                with open(os.path.join(root, name), "r") as file:
-                    # read the contents of the file
-                    file_contents = [s for s in file.read().splitlines() if s]
-                    #print(file_contents)
-                    solution_list = [line.split(' ') for line in file_contents[1:]]
-                    samples_dict[file_contents[0]] = solution_list
-        #for name in dirs:
-        #    print(os.path.join(root, name))
-
-    #print(samples_dict)
-    solution_num = 1;
-    for dirname in samples_dict.keys():
-        for solution in samples_dict[dirname]:
-            problem_num = solution[0]
-            filename = solution[1]
-            full_filename = file_path + os.sep + dirname + os.sep + filename
-
-            complexityStatsGen.generate_stats(full_filename, problem_num, dirname, (solution_num == 1))
-            solution_num += 1
-
+    if sys.argv[1] == '-c':
+        complexityStatsGen.calculate_stats_for_dirtree(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == '-h':
+        processHumanRatings.process_human_ratings_dir(sys.argv[2])

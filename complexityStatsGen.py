@@ -2,20 +2,21 @@ import os
 import subprocess
 import lizard
 import json
+import sys
 from pygount import SourceAnalysis
 
 
-def generate_stats(file_path, problem_num, file_label, print_header):
+def generate_stats(file_path, problem_num, file_label, print_header, outfile):
     file_stats = calculate_stats(file_path)
 
     if print_header:
         file_stats_header = "filesource,problem_num,filename,"
         file_stats_header += ','.join(str(x) for x in file_stats.keys())
-        print(file_stats_header)
+        print(file_stats_header, file=outfile)
 
     file_stats_str = '"' + file_label + '","' + problem_num + '","' + os.path.basename(file_path) + '",'
     file_stats_str += ','.join(str(x) if x is not None else "" for x in file_stats.values())
-    print(file_stats_str)
+    print(file_stats_str, file=outfile)
 
 
 def calculate_stats(file_path):
@@ -71,6 +72,41 @@ def calculate_stats(file_path):
         file_stats["mm_" + f] = mm_result["overall"][f]
 
     return file_stats
+
+
+def calculate_stats_for_dirtree(file_path, outfile_name):
+    samples_dict = {}
+
+    outfile = sys.stdout
+    if outfile_name != 'stdout':
+        outfile = open(outfile_name, "w")
+
+    for root, dirs, files in os.walk(file_path):
+        for name in files:
+            if name == 'MANIFEST':
+                # print(os.path.join(root, name))
+                with open(os.path.join(root, name), "r") as file:
+                    # read the contents of the file
+                    file_contents = [s for s in file.read().splitlines() if s]
+                    # print(file_contents)
+                    solution_list = [line.split(' ') for line in file_contents[1:]]
+                    samples_dict[file_contents[0]] = solution_list
+        # for name in dirs:
+        #    print(os.path.join(root, name))
+
+    # print(samples_dict)
+    solution_num = 1
+    for dirname in samples_dict.keys():
+        for solution in samples_dict[dirname]:
+            problem_num = solution[0]
+            filename = solution[1]
+            full_filename = file_path + os.sep + dirname + os.sep + filename
+
+            generate_stats(full_filename, problem_num, dirname, (solution_num == 1), outfile)
+            solution_num += 1
+
+    if outfile_name != 'stdout':
+        outfile.close()
 
 
 if __name__ == '__main__':
