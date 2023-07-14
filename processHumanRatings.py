@@ -23,7 +23,10 @@ def process_human_ratings_file(file_name, problem_num, solution_list):
     for solnum in range(1, 6):
         sol_features_only = features.loc[:, "S%d_Readability" % solnum:"S%d_Overall" % solnum].copy()
         sol_features_only.rename(columns=lambda n: n.replace("S%d_" % solnum, ""), inplace=True)
-        sol_features_only = pd.get_dummies(sol_features_only)
+        sol_features_only.replace({'Not at All': 1, 'A little': 2, 'Somewhat': 3, 'Mostly': 4, 'Very much': 5}, inplace=True)
+
+        #sol_features_only.replace({'Not at All': 'NotAtAll', 'A little': 'Alittle', 'Very much': 'Verymuch'}, inplace=True)
+        #sol_features_only = pd.get_dummies(sol_features_only)
 
         # Q: Do we want dummies for the "overall" feature, which is actually our label?
 
@@ -33,6 +36,7 @@ def process_human_ratings_file(file_name, problem_num, solution_list):
         sol_info = dict(solution_list[solnum - 1])
         sol_info['problem_number'] = problem_num
         sol_info['features'] = sol_features
+        sol_info['average_overall'] =  sol_features['Overall'].mean()
 
         solution_info.append(sol_info)
 
