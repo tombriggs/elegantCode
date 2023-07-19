@@ -17,9 +17,9 @@ def generate_elegance_model(human_ratings, complexity_stats_file):
     # structure of human_ratings is [problem_num][solution_num]
     for oneProblemRatings in human_ratings:
         for oneSolutionRatings in oneProblemRatings:
-            # TODO: I think this value is already available in oneSolutionRatings['average_overall']
-            avgOverall = oneSolutionRatings['features']['Overall'].mean()
-            average_ratings_dict[oneSolutionRatings['author'] + ':' + oneSolutionRatings['source_file']] = avgOverall
+            # avgOverall = oneSolutionRatings['features']['Overall'].mean()
+            dict_key = oneSolutionRatings['author'] + ':' + oneSolutionRatings['source_file']
+            average_ratings_dict[dict_key] = oneSolutionRatings['average_overall']
 
     complexity_stats_raw['averageOverall'] = complexity_stats_raw['item_key'].map(average_ratings_dict)
     complexity_stats_raw['problemComplexity'] = complexity_stats_raw['problem_num'].map(problem_complexities)
@@ -55,7 +55,8 @@ def generate_elegance_model(human_ratings, complexity_stats_file):
     print('Testing Features Shape:', test_features.shape)
     print('Testing Labels Shape:', test_labels.shape)
 
-    # Note to self: I think the baseline is simpy 3 - i.e. the middle of the range of 1-5
+    # Note to self: I think the baseline is simply 3 - i.e. the middle of the range of 1-5
+    baseline_preds = np.full((1, len(test_labels)), 3)
 
     # Instantiate model with 1000 decision trees
     rf = RandomForestRegressor(n_estimators=1000, random_state=42)
@@ -68,4 +69,8 @@ def generate_elegance_model(human_ratings, complexity_stats_file):
 
     # Calculate the absolute errors
     errors = abs(predictions - test_labels)
+    print(errors)
+
+    baseline_errors = abs(baseline_preds - test_labels)
+    print(baseline_errors)
 
