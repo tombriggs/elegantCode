@@ -13,13 +13,19 @@ def generate_elegance_model(human_ratings, complexity_stats_file):
     # Generate a unique key for each file by combining the author/source and file name
     complexity_stats_raw["item_key"] = complexity_stats_raw["filesource"] + ":" + complexity_stats_raw["filename"]
 
+    # TODO: Turn the rest of this into a function that takes the average_field_name as an argument
+    # so we can get the average and weighted_average results in one run
+
+    #average_field_name = 'average_overall'
+    average_field_name = 'weighted_overall'
+
     average_ratings_dict = {}
     # structure of human_ratings is [problem_num][solution_num]
     for oneProblemRatings in human_ratings:
         for oneSolutionRatings in oneProblemRatings:
             # avgOverall = oneSolutionRatings['features']['Overall'].mean()
             dict_key = oneSolutionRatings['author'] + ':' + oneSolutionRatings['source_file']
-            average_ratings_dict[dict_key] = oneSolutionRatings['average_overall']
+            average_ratings_dict[dict_key] = oneSolutionRatings[average_field_name]
 
     complexity_stats_raw['averageOverall'] = complexity_stats_raw['item_key'].map(average_ratings_dict)
     complexity_stats_raw['problemComplexity'] = complexity_stats_raw['problem_num'].map(problem_complexities)
@@ -50,11 +56,6 @@ def generate_elegance_model(human_ratings, complexity_stats_file):
     train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size=0.20,
                                                                                 random_state=42)
 
-    print('Training Features Shape:', train_features.shape)
-    print('Training Labels Shape:', train_labels.shape)
-    print('Testing Features Shape:', test_features.shape)
-    print('Testing Labels Shape:', test_labels.shape)
-
     # Note to self: I think the baseline is simply 3 - i.e. the middle of the range of 1-5
     baseline_preds = np.full((1, len(test_labels)), 3)
 
@@ -69,8 +70,10 @@ def generate_elegance_model(human_ratings, complexity_stats_file):
 
     # Calculate the absolute errors
     errors = abs(predictions - test_labels)
-    print(errors)
+    print("Error: {}".format(errors))
 
     baseline_errors = abs(baseline_preds - test_labels)
-    print(baseline_errors)
+    print("Baseline errors: {}".format(baseline_errors))
+
+    print("Improvement: {}".format(baseline_errors - errors))
 
