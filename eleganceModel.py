@@ -17,7 +17,9 @@ def generate_elegance_model(human_ratings, complexity_stats_file):
     # so we can get the average and weighted_average results in one run
 
     #average_field_name = 'average_overall'
-    average_field_name = 'weighted_overall'
+    #average_field_name = 'total_weighted_overall'
+    #average_field_name = 'lang_weighted_overall'
+    average_field_name = 'total_and_lang_weighted_overall'
 
     average_ratings_dict = {}
     # structure of human_ratings is [problem_num][solution_num]
@@ -25,7 +27,7 @@ def generate_elegance_model(human_ratings, complexity_stats_file):
         for oneSolutionRatings in oneProblemRatings:
             # avgOverall = oneSolutionRatings['features']['Overall'].mean()
             dict_key = oneSolutionRatings['author'] + ':' + oneSolutionRatings['source_file']
-            average_ratings_dict[dict_key] = oneSolutionRatings[average_field_name]
+            average_ratings_dict[dict_key] = oneSolutionRatings['average_scores'][average_field_name]
 
     complexity_stats_raw['averageOverall'] = complexity_stats_raw['item_key'].map(average_ratings_dict)
     complexity_stats_raw['problemComplexity'] = complexity_stats_raw['problem_num'].map(problem_complexities)
@@ -57,7 +59,7 @@ def generate_elegance_model(human_ratings, complexity_stats_file):
                                                                                 random_state=42)
 
     # Note to self: I think the baseline is simply 3 - i.e. the middle of the range of 1-5
-    baseline_preds = np.full((1, len(test_labels)), 3)
+    baseline_preds = np.full((1, len(test_labels)), 3)[0]
 
     # Instantiate model with 1000 decision trees
     rf = RandomForestRegressor(n_estimators=1000, random_state=42)
