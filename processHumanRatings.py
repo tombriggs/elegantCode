@@ -82,12 +82,12 @@ def process_human_ratings_file(file_name, problem_num, solution_list, evaluator_
                                                        (0.7 + (sol_features[exp_total_field]/10))).mean().round(3)
 
         if print_header:
-            print("Unweighted,TotalExp,LangExp,TotalAndLang")
+            #print("Unweighted,TotalExp,LangExp,TotalAndLang")
             print_header = False
 
-        print("{},{},{},{}"
-              .format(average_scores['average_overall'], average_scores['total_weighted_overall'],
-                      average_scores['lang_weighted_overall'], average_scores['total_and_lang_weighted_overall']))
+        #print("{},{},{},{}"
+        #      .format(average_scores['average_overall'], average_scores['total_weighted_overall'],
+        #              average_scores['lang_weighted_overall'], average_scores['total_and_lang_weighted_overall']))
 
         sol_info['average_scores'] = average_scores
 
