@@ -1,3 +1,5 @@
 filename,problem_num,author1,source_file1,author2,source_file2,author3,source_file3,author4,source_file4,author5,source_file5
 Solution1_Ratings.csv,1,nayuki-Project-Euler-solutions,p001.java,nayuki-Project-Euler-solutions,p001.py,AlgoSolutions,pe001.py,hacktoberfest-projecteuler,solution.c,hacktoberfest-projecteuler,solution.java
 Solution2_Ratings.csv,2,nayuki-Project-Euler-solutions,p002.java,nayuki-Project-Euler-solutions,p002.py,AlgoSolutions,pe002.py,AnathLab,Problem_2.cpp,HackerRankProjectEuler,002.cpp
+Solution3_Ratings.csv,3,nayuki-Project-Euler-solutions,p054.java,nayuki-Project-Euler-solutions,p054.py,project-euler-python,p054.py,stbrumme,euler-0054.cpp,aks47u,PE054_Poker_hands.java
+Solution4_Ratings.csv,4,stbrumme,euler-0074.cpp,AlgoSolutions,pe074.py,nayuki-Project-Euler-solutions,p074.py,nayuki-Project-Euler-solutions,p074.java,aks47u,PE074_Digit_factorial_chains.java
