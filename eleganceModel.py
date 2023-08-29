@@ -46,14 +46,20 @@ def generate_elegance_model(human_ratings, complexity_stats_file):
     # labels = np.array(features['actual'])
     labels = np.array(complexity_stats['averageOverall'])
 
-    # Remove the labels (and internal bookkeeping string values) from the features
+    # Remove the labels, internal bookkeeping values,
+    # and we've determined aren't important from the features
     # axis 1 refers to the columns
     # features = features.drop('actual', axis=1)
-    complexity_stats = complexity_stats.drop(['averageOverall', 'filesource', 'filename', 'item_key'], axis=1)
+    columns_to_drop = ['averageOverall', 'filesource', 'filename', 'item_key', 'problem_num',
+                       'mm_fanout_internal', 'mm_loc', 'mm_maintainability_index', 'mm_pylint',
+                       'mm_tiobe_compiler', 'mm_tiobe_coverage', 'mm_tiobe_duplication', 'mm_tiobe_functional',
+                       'mm_tiobe_security', 'mm_tiobe_standard'
+                       ]
+    complexity_stats = complexity_stats.drop(columns_to_drop, axis=1)
 
     # Saving feature names for later use
     # feature_list = list(features.columns)
-    # complexity_stats_list = list(complexity_stats.columns)
+    complexity_stats_list = list(complexity_stats.columns)
 
     # Convert to numpy array
     # features = np.array(features)
@@ -107,3 +113,55 @@ def generate_elegance_model(human_ratings, complexity_stats_file):
     print("------------")
     for average_field_name in average_fields:
         print("{}: {}".format(average_field_name, results_dict[average_field_name]['improvements_average']))
+
+    """
+    # Get numerical feature importances
+    importances = list(rf.feature_importances_)
+
+    # List of tuples with variable and importance
+    feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(complexity_stats_list, importances)]
+
+    # Sort the feature importances by most important first
+    feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
+
+    # Print out the feature and importances
+    print("\nVariable Importance")
+    print("-----------------------")
+    [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances];
+    """
+
+    """
+    # Create a new random forest with only the most important variables
+    rf_most_important = RandomForestRegressor(n_estimators=1000, random_state=42)
+
+    # Extract the most important features
+    important_indices = [complexity_stats_list.index('avg_token_count'), complexity_stats_list.index('max_token_count'),
+                         complexity_stats_list.index('min_token_count'), complexity_stats_list.index('mm_fanout_external'),
+                         complexity_stats_list.index('problemComplexity'), complexity_stats_list.index('empty_count'),
+                         complexity_stats_list.index('mm_comment_ratio'), complexity_stats_list.index('nloc_pygount'),
+                         complexity_stats_list.index('comment_count'), complexity_stats_list.index('mm_halstead_difficulty'),
+                         complexity_stats_list.index('mm_operands_sum'), complexity_stats_list.index('mm_operators_uniq')]
+    train_important = train_features[:, important_indices]
+    test_important = test_features[:, important_indices]
+
+    average_field_name = 'total_weighted_overall'
+
+    # Train the second random forest
+    train_labels_weighted_total = [tl[average_field_name] for tl in train_labels]
+    rf_most_important.fit(train_important, train_labels_weighted_total)
+
+    # Make predictions and determine the error
+    test_labels_weighted_total = [tl[average_field_name] for tl in test_labels]
+    predictions = rf_most_important.predict(test_important)
+    errors = abs(predictions - test_labels_weighted_total)
+    error_average = mean(errors).round(3)
+
+    baseline_errors = abs(baseline_preds - test_labels_weighted_total)
+    baseline_error_average = mean(baseline_errors).round(3)
+
+    improvements = baseline_errors - errors
+    improvements_average = mean(improvements).round(3)
+    print("Improvement")
+    print("------------")
+    print("{}: {}".format(average_field_name, improvements_average))
+    """
