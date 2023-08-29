@@ -33,7 +33,7 @@ if __name__ == '__main__':
         print("or")
         print("\tpython elegantCode.py -h <human-ratings-dirname>")
         print("or")
-        print("\tpython elegantCode.py -m <human-ratings-dirname> <complexity stats file>")
+        print("\tpython elegantCode.py -m <human-ratings-dirname> <complexity stats file> [model output file]")
         sys.exit(1)
 
     if sys.argv[1] == '-c':
@@ -41,6 +41,10 @@ if __name__ == '__main__':
     elif sys.argv[1] == '-h':
         processHumanRatings.process_human_ratings_dir(sys.argv[2])
     elif sys.argv[1] == '-m':
+        output_file_name = None
+        if num_args >= 5:
+            output_file_name = sys.argv[4]
+
         human_ratings = processHumanRatings.process_human_ratings_dir(sys.argv[2])
-        eleganceModel.generate_elegance_model(human_ratings, sys.argv[3])
+        eleganceModel.generate_elegance_model(human_ratings, sys.argv[3], output_file_name)
 

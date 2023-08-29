@@ -3,12 +3,13 @@ import numpy as np
 from statistics import mean
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
+from joblib import dump, load
 
 #problem_complexities = {1: 1, 2: 1, 54: 2, 74: 3}
 problem_complexities = {1: 5, 2: 5, 54: 10, 74: 15}
 
 
-def generate_elegance_model(human_ratings, complexity_stats_file):
+def generate_elegance_model(human_ratings, complexity_stats_file, output_file_name):
     complexity_stats_raw = pd.read_csv(complexity_stats_file)
 
     # Generate a unique key for each file by combining the author/source and file name
@@ -117,6 +118,11 @@ def generate_elegance_model(human_ratings, complexity_stats_file):
     print("------------")
     for average_field_name in average_fields:
         print("{}: {}".format(average_field_name, results_dict[average_field_name]['improvements_average']))
+
+    if output_file_name is not None:
+        dump(rf, output_file_name)
+    # Load this with:
+    # rf = load(output_file_name)
 
     """
     # Get numerical feature importances
