@@ -67,9 +67,10 @@ def calculate_stats(file_path):
     # print(mm_output)
     mm_result = json.loads(mm_output.stdout)
     # print(mm_result)
-    # There should be only 1...
-    for f in mm_result["overall"]:
-        file_stats["mm_" + f] = mm_result["overall"][f]
+    # There should be only one input file so the overall results
+    # should be the same as the per-file results
+    for metric_name in mm_result["overall"]:
+        file_stats["mm_" + metric_name] = mm_result["overall"][metric_name]
 
     return file_stats
 
