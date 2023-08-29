@@ -36,6 +36,10 @@ def generate_elegance_model(human_ratings, complexity_stats_file):
 
     complexity_stats_raw['averageOverall'] = complexity_stats_raw['item_key'].map(average_ratings_dict)
     complexity_stats_raw['problemComplexity'] = complexity_stats_raw['problem_num'].map(problem_complexities)
+
+    complexity_stats_raw['avg_func_cc_to_complexity_ratio'] = complexity_stats_raw['avg_func_cc'] / complexity_stats_raw['problemComplexity']
+    complexity_stats_raw['max_func_cc_to_complexity_ratio'] = complexity_stats_raw['max_func_cc'] / complexity_stats_raw['problemComplexity']
+
     complexity_stats = complexity_stats_raw[complexity_stats_raw['averageOverall'].notna()]
 
     #####
