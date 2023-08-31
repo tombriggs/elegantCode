@@ -100,7 +100,7 @@ def process_human_ratings_dir(dirname):
     manifest_file = 'MANIFEST.csv'
 
     file_list = os.listdir(dirname)
-    print(file_list)
+    #print(file_list)
 
     human_ratings_data = None
 

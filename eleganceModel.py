@@ -9,7 +9,7 @@ from joblib import dump, load
 problem_complexities = {1: 5, 2: 5, 54: 10, 74: 15}
 
 
-def generate_elegance_model(human_ratings, complexity_stats_file, output_file_name):
+def generate_elegance_model(human_ratings, complexity_stats_file, output_file_name_root):
     complexity_stats_raw = pd.read_csv(complexity_stats_file)
 
     # Generate a unique key for each file by combining the author/source and file name
@@ -114,64 +114,31 @@ def generate_elegance_model(human_ratings, complexity_stats_file, output_file_na
         results_dict[average_field_name]['improvements_average'] = improvement_average
         #print("{} Improvement: {}, average {}".format(average_field_name, improvements, improvement_average))
 
-    print("Improvements")
+        #print_importances(average_field_name, rf, complexity_stats_list)
+
+        if output_file_name_root is not None:
+            output_file_name = output_file_name_root + "_" + average_field_name + ".joblib"
+            dump(rf, output_file_name)
+            # Load this with:
+            # rf = load(output_file_name)
+
+    print("\nImprovements")
     print("------------")
     for average_field_name in average_fields:
         print("{}: {}".format(average_field_name, results_dict[average_field_name]['improvements_average']))
 
-    if output_file_name is not None:
-        dump(rf, output_file_name)
-    # Load this with:
-    # rf = load(output_file_name)
-
-    """
+def print_importances(average_field_name, rf, field_list):
     # Get numerical feature importances
     importances = list(rf.feature_importances_)
 
     # List of tuples with variable and importance
-    feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(complexity_stats_list, importances)]
+    feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(field_list, importances)]
 
     # Sort the feature importances by most important first
     feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
 
     # Print out the feature and importances
-    print("\nVariable Importance")
+    print("\nVariable Importance " + average_field_name)
     print("-----------------------")
-    [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances];
-    """
+    [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
 
-    """
-    # Create a new random forest with only the most important variables
-    rf_most_important = RandomForestRegressor(n_estimators=1000, random_state=42)
-
-    # Extract the most important features
-    important_indices = [complexity_stats_list.index('avg_token_count'), complexity_stats_list.index('max_token_count'),
-                         complexity_stats_list.index('min_token_count'), complexity_stats_list.index('mm_fanout_external'),
-                         complexity_stats_list.index('problemComplexity'), complexity_stats_list.index('empty_count'),
-                         complexity_stats_list.index('mm_comment_ratio'), complexity_stats_list.index('nloc_pygount'),
-                         complexity_stats_list.index('comment_count'), complexity_stats_list.index('mm_halstead_difficulty'),
-                         complexity_stats_list.index('mm_operands_sum'), complexity_stats_list.index('mm_operators_uniq')]
-    train_important = train_features[:, important_indices]
-    test_important = test_features[:, important_indices]
-
-    average_field_name = 'total_weighted_overall'
-
-    # Train the second random forest
-    train_labels_weighted_total = [tl[average_field_name] for tl in train_labels]
-    rf_most_important.fit(train_important, train_labels_weighted_total)
-
-    # Make predictions and determine the error
-    test_labels_weighted_total = [tl[average_field_name] for tl in test_labels]
-    predictions = rf_most_important.predict(test_important)
-    errors = abs(predictions - test_labels_weighted_total)
-    error_average = mean(errors).round(3)
-
-    baseline_errors = abs(baseline_preds - test_labels_weighted_total)
-    baseline_error_average = mean(baseline_errors).round(3)
-
-    improvements = baseline_errors - errors
-    improvements_average = mean(improvements).round(3)
-    print("Improvement")
-    print("------------")
-    print("{}: {}".format(average_field_name, improvements_average))
-    """

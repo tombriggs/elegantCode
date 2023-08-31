@@ -33,7 +33,7 @@ if __name__ == '__main__':
         print("or")
         print("\tpython elegantCode.py -h <human-ratings-dirname>")
         print("or")
-        print("\tpython elegantCode.py -m <human-ratings-dirname> <complexity stats file> [model output file]")
+        print("\tpython elegantCode.py -m <human-ratings-dirname> <complexity stats file> [model output file root]")
         sys.exit(1)
 
     if sys.argv[1] == '-c':
