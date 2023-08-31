@@ -56,7 +56,7 @@ def generate_elegance_model(human_ratings, complexity_stats_file, output_file_na
     # axis 1 refers to the columns
     # features = features.drop('actual', axis=1)
     columns_to_drop = ['averageOverall', 'filesource', 'filename', 'item_key', 'problem_num',
-                       'mm_fanout_internal', 'mm_loc', 'mm_maintainability_index', 'mm_pylint',
+                       'mm_fanout_internal', 'mm_pylint',
                        'mm_tiobe_compiler', 'mm_tiobe_coverage', 'mm_tiobe_duplication', 'mm_tiobe_functional',
                        'mm_tiobe_security', 'mm_tiobe_standard'
                        ]
