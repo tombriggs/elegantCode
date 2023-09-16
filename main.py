@@ -1,4 +1,6 @@
 import sys
+
+import chatgptEvaluator
 import complexityStatsGen
 import processHumanRatings
 import eleganceModel
@@ -38,6 +40,8 @@ if __name__ == '__main__':
 
     if sys.argv[1] == '-c':
         complexityStatsGen.calculate_stats_for_dirtree(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == '-g':
+        chatgptEvaluator.ask_chatgpt_for_dirtree(sys.argv[2], sys.argv[3])
     elif sys.argv[1] == '-h':
         processHumanRatings.process_human_ratings_dir(sys.argv[2])
     elif sys.argv[1] == '-m':
