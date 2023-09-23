@@ -2,6 +2,7 @@ import sys
 
 import chatgptEvaluator
 import complexityStatsGen
+import evaluateProgram
 import processHumanRatings
 import eleganceModel
 
@@ -30,21 +31,31 @@ import eleganceModel
 if __name__ == '__main__':
     # get the directory name from the command line arguments
     num_args = len(sys.argv)
-    if num_args < 4:
+    if num_args < 4 or (num_args == 3 and sys.argv[1] == '-h'):
         print("Usage:\n\tpython elegantCode.py -c <code-samples-dirname> <output file>")
+        print("or")
+        print("\tpython elegantCode.py -g <code-samples-dirname> <output file>")
+        print("or")
+        print("\tpython elegantCode.py -s <complexity rating> <program file> [model]")
         print("or")
         print("\tpython elegantCode.py -h <human-ratings-dirname>")
         print("or")
         print("\tpython elegantCode.py -m <human-ratings-dirname> <complexity stats file> [model output file root]")
         sys.exit(1)
 
-    if sys.argv[1] == '-c':
+    run_mode = sys.argv[1]
+    if run_mode == '-c':
         complexityStatsGen.calculate_stats_for_dirtree(sys.argv[2], sys.argv[3])
-    elif sys.argv[1] == '-g':
+    elif run_mode == '-g':
         chatgptEvaluator.ask_chatgpt_for_dirtree(sys.argv[2], sys.argv[3])
-    elif sys.argv[1] == '-h':
+    elif run_mode == '-s':
+        model_name = None
+        if num_args >= 5:
+            model_name = sys.argv[4]
+        evaluateProgram.score_program(sys.argv[2], sys.argv[3], model_name)
+    elif run_mode == '-h':
         processHumanRatings.process_human_ratings_dir(sys.argv[2])
-    elif sys.argv[1] == '-m':
+    elif run_mode == '-m':
         output_file_name = None
         if num_args >= 5:
             output_file_name = sys.argv[4]

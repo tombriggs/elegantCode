@@ -3,7 +3,7 @@ import numpy as np
 from statistics import mean
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-from joblib import dump, load
+from joblib import dump
 
 #problem_complexities = {1: 1, 2: 1, 54: 2, 74: 3}
 problem_complexities = {1: 5, 2: 5, 54: 10, 74: 15}
@@ -51,16 +51,7 @@ def generate_elegance_model(human_ratings, complexity_stats_file, output_file_na
     # labels = np.array(features['actual'])
     labels = np.array(complexity_stats['averageOverall'])
 
-    # Remove the labels, internal bookkeeping values,
-    # and we've determined aren't important from the features
-    # axis 1 refers to the columns
-    # features = features.drop('actual', axis=1)
-    columns_to_drop = ['averageOverall', 'filesource', 'filename', 'item_key', 'problem_num',
-                       'mm_fanout_internal', 'mm_pylint',
-                       'mm_tiobe_compiler', 'mm_tiobe_coverage', 'mm_tiobe_duplication', 'mm_tiobe_functional',
-                       'mm_tiobe_security', 'mm_tiobe_standard'
-                       ]
-    complexity_stats = complexity_stats.drop(columns_to_drop, axis=1)
+    complexity_stats = drop_unnecessary_columns(complexity_stats)
 
     # Saving feature names for later use
     # feature_list = list(features.columns)
@@ -119,13 +110,26 @@ def generate_elegance_model(human_ratings, complexity_stats_file, output_file_na
         if output_file_name_root is not None:
             output_file_name = output_file_name_root + "_" + average_field_name + ".joblib"
             dump(rf, output_file_name)
-            # Load this with:
-            # rf = load(output_file_name)
 
     print("\nImprovements")
     print("------------")
     for average_field_name in average_fields:
         print("{}: {}".format(average_field_name, results_dict[average_field_name]['improvements_average']))
+
+
+def drop_unnecessary_columns(complexity_stats):
+    # Remove the labels, internal bookkeeping values,
+    # and we've determined aren't important from the features
+    # axis 1 refers to the columns
+    # features = features.drop('actual', axis=1)
+    columns_to_drop = ['averageOverall', 'filesource', 'filename', 'item_key', 'problem_num',
+                       'mm_fanout_internal', 'mm_pylint',
+                       'mm_tiobe_compiler', 'mm_tiobe_coverage', 'mm_tiobe_duplication', 'mm_tiobe_functional',
+                       'mm_tiobe_security', 'mm_tiobe_standard'
+                       ]
+
+    return complexity_stats.drop(columns_to_drop, axis=1, errors='ignore')
+
 
 def print_importances(average_field_name, rf, field_list):
     # Get numerical feature importances
