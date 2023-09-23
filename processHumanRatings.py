@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import re
 import os
 
@@ -30,6 +31,10 @@ def process_human_ratings_file(file_name, problem_num, solution_list, evaluator_
         print_header = True
 
         evaluator_features = features.iloc[:, 0:10]
+
+        # Call this here, before replacing the textual values with numeric values,
+        # so the output is more easily human-readable
+        #generate_demographic_stats(evaluator_features)
 
         columns_to_replace = ['exp_w_java', 'exp_w_py', 'exp_w_c', 'exp_w_cpp', 'exp_total']
         for column_name in columns_to_replace:
@@ -142,5 +147,33 @@ def process_human_ratings_dir(dirname):
                 human_ratings_data.append(one_ratings_file)
 
     #print(human_ratings_data)
+    #validate_survey_responses(human_ratings_data)
     return human_ratings_data
+
+def generate_demographic_stats(evaluator_features):
+    dimensions_to_count = ['Age', 'Gender',
+                           'exp_w_java', 'exp_w_py', 'exp_w_c', 'exp_w_cpp', 'exp_total']
+
+    dimension_counts = {}
+    for dimension in dimensions_to_count:
+        count_by_dim = evaluator_features.groupby([dimension]).size()
+        dimension_counts[dimension] = count_by_dim
+
+    print(dimension_counts)
+
+
+def validate_survey_responses(human_ratings_data):
+    individual_dimensions = ['Readability', 'Maintainability',
+                            'Extensibility', 'Scalability',
+                            'Recognition', 'Convincingness',
+                            'Pleasingness', 'Completeness',
+                            'Gracefulness', 'Harmoniousness',
+                            'Sustainability']
+    for problem_data in human_ratings_data:
+        for solution_data in problem_data:
+            df = solution_data['features']
+            df = df.replace('', np.nan)
+            df['avg_individual_scores'] = df[individual_dimensions].mean(axis=1)
+            df['unique_individual_scores'] = df[individual_dimensions].nunique(axis=1)
+            print(df)
 
