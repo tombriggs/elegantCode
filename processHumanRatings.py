@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import re
 import os
+import sys
 
 # uploaded = files.upload()
 
@@ -147,7 +148,6 @@ def process_human_ratings_dir(dirname):
                 human_ratings_data.append(one_ratings_file)
 
     #print(human_ratings_data)
-    #validate_survey_responses(human_ratings_data)
     return human_ratings_data
 
 def generate_demographic_stats(evaluator_features):
@@ -162,18 +162,80 @@ def generate_demographic_stats(evaluator_features):
     print(dimension_counts)
 
 
-def validate_survey_responses(human_ratings_data):
-    individual_dimensions = ['Readability', 'Maintainability',
-                            'Extensibility', 'Scalability',
-                            'Recognition', 'Convincingness',
-                            'Pleasingness', 'Completeness',
-                            'Gracefulness', 'Harmoniousness',
-                            'Sustainability']
+def validate_survey_responses(human_ratings_data, outfile_name_root):
+    individual_dimensions = ['Readability', 'Maintainability', 'Extensibility', 'Scalability',
+                            'Recognition', 'Convincingness', 'Pleasingness', 'Completeness',
+                            'Gracefulness', 'Harmoniousness', 'Sustainability','Overall']
+    suspicious_pattern = [1,2,3,4,5,4,3,2,1,2,3,4]
+
+    outfile_corr_each_problem = sys.stdout
+    outfile_corr_each_solution = sys.stdout
+    outfile_corr_overall = sys.stdout
+    outfile_misc = sys.stdout
+    if outfile_name_root != 'stdout':
+        outfile_corr_each_solution = open(outfile_name_root + "_corr_per_solution.csv", "w")
+        outfile_corr_each_problem = open(outfile_name_root + "_corr_per_problem.csv", "w")
+        outfile_corr_overall = open(outfile_name_root + "_corr_overall.csv", "w")
+        outfile_misc = open(outfile_name_root + "_misc.csv", "w")
+
+    write_header_problem = True
+    all_problem_data = pd.DataFrame()
+
     for problem_data in human_ratings_data:
+        write_header_sol = True
+        all_solution_data = pd.DataFrame()
+
         for solution_data in problem_data:
             df = solution_data['features']
             df = df.replace('', np.nan)
-            df['avg_individual_scores'] = df[individual_dimensions].mean(axis=1)
-            df['unique_individual_scores'] = df[individual_dimensions].nunique(axis=1)
-            print(df)
 
+            this_solution_data = df[individual_dimensions]
+
+            # Add these answers to our list of answers for this problem
+            all_solution_data = pd.concat([all_solution_data, this_solution_data])
+
+            # Add these answers to our list of answers for all problems
+            all_problem_data = pd.concat([all_problem_data, this_solution_data])
+
+            # Generate a correlation matrix just for the evaluations
+            # for this one program
+            corr_matrix = this_solution_data.corr()
+            corr_matrix['problem_num'] = solution_data['problem_number']
+            corr_matrix['author'] = solution_data['author']
+            corr_matrix['source_file'] = solution_data['source_file']
+            corr_matrix.to_csv(outfile_corr_each_solution, header=write_header_sol)
+
+            # Generate some sanity checks for the evaluations of this one program
+            sanity_checks = pd.DataFrame()
+            sanity_checks['submission_date'] = df['Submission Date']
+            sanity_checks['submission_ip'] = df['Submission IP']
+            sanity_checks['avg_individual_scores'] = df[individual_dimensions].mean(axis=1)
+            sanity_checks['stddev_individual_scores'] = df[individual_dimensions].std(axis=1)
+            sanity_checks['unique_individual_scores'] = df[individual_dimensions].nunique(axis=1)
+            sanity_checks['missing_scores'] = df[individual_dimensions].isnull().sum(axis=1)
+            sanity_checks['suspicious_pattern'] = \
+                this_solution_data[(this_solution_data == suspicious_pattern)].count(axis=1) == len(suspicious_pattern)
+            sanity_checks['suspicious_pattern'] = sanity_checks['suspicious_pattern'].astype(int)
+
+            # Set these after the rows have been established
+            sanity_checks['problem_num'] = solution_data['problem_number']
+            sanity_checks['author'] = solution_data['author']
+            sanity_checks['source_file'] = solution_data['source_file']
+            sanity_checks.to_csv(outfile_misc, header=write_header_sol)
+
+            write_header_sol = False
+
+        # Generate the correlation matrix for the answers to this one problem
+        all_corr_matrix = all_solution_data.corr()
+        all_corr_matrix.to_csv(outfile_corr_each_problem, header=write_header_problem)
+        write_header_problem = False
+
+    # Generate the correlation matrix for all answers to all problems
+    overall_corr_matrix = all_problem_data.corr()
+    overall_corr_matrix.to_csv(outfile_corr_overall)
+
+    if outfile_name_root != 'stdout':
+        outfile_corr_each_problem.close()
+        outfile_corr_each_solution.close()
+        outfile_corr_overall.close()
+        outfile_misc.close()

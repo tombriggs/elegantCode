@@ -38,7 +38,7 @@ if __name__ == '__main__':
         print("or")
         print("\tpython elegantCode.py -s <complexity rating> <program file> [model]")
         print("or")
-        print("\tpython elegantCode.py -h <human-ratings-dirname>")
+        print("\tpython elegantCode.py -h <human-ratings-dirname> <output file root>")
         print("or")
         print("\tpython elegantCode.py -m <human-ratings-dirname> <complexity stats file> [model output file root]")
         sys.exit(1)
@@ -54,7 +54,8 @@ if __name__ == '__main__':
             model_name = sys.argv[4]
         evaluateProgram.score_program(sys.argv[2], sys.argv[3], model_name)
     elif run_mode == '-h':
-        processHumanRatings.process_human_ratings_dir(sys.argv[2])
+        human_ratings_data = processHumanRatings.process_human_ratings_dir(sys.argv[2])
+        processHumanRatings.validate_survey_responses(human_ratings_data, sys.argv[3])
     elif run_mode == '-m':
         output_file_name = None
         if num_args >= 5:
