@@ -166,7 +166,7 @@ def validate_survey_responses(human_ratings_data, outfile_name_root):
     individual_dimensions = ['Readability', 'Maintainability', 'Extensibility', 'Scalability',
                             'Recognition', 'Convincingness', 'Pleasingness', 'Completeness',
                             'Gracefulness', 'Harmoniousness', 'Sustainability','Overall']
-    suspicious_pattern = [1,2,3,4,5,4,3,2,1,2,3,4]
+    suspicious_patterns = [[1,2,3,4,5,4,3,2,1,2,3,4],[5,4,3,2,1,2,3,4,5,4,3,2]]
 
     outfile_corr_each_problem = sys.stdout
     outfile_corr_each_solution = sys.stdout
@@ -212,10 +212,17 @@ def validate_survey_responses(human_ratings_data, outfile_name_root):
             sanity_checks['avg_individual_scores'] = df[individual_dimensions].mean(axis=1)
             sanity_checks['stddev_individual_scores'] = df[individual_dimensions].std(axis=1)
             sanity_checks['unique_individual_scores'] = df[individual_dimensions].nunique(axis=1)
+            sanity_checks['all_scores_same'] = sanity_checks['unique_individual_scores'] == 1
+            sanity_checks['all_scores_same'] = sanity_checks['all_scores_same'].astype(int)
             sanity_checks['missing_scores'] = df[individual_dimensions].isnull().sum(axis=1)
-            sanity_checks['suspicious_pattern'] = \
-                this_solution_data[(this_solution_data == suspicious_pattern)].count(axis=1) == len(suspicious_pattern)
-            sanity_checks['suspicious_pattern'] = sanity_checks['suspicious_pattern'].astype(int)
+
+            pattern_num = 1
+            for suspicious_pattern in suspicious_patterns:
+                check_name = 'suspicious_pattern' + str(pattern_num)
+                sanity_checks[check_name] = \
+                    this_solution_data[(this_solution_data == suspicious_pattern)].count(axis=1) == len(suspicious_pattern)
+                sanity_checks[check_name] = sanity_checks[check_name].astype(int)
+                pattern_num += 1
 
             # Set these after the rows have been established
             sanity_checks['problem_num'] = solution_data['problem_number']
