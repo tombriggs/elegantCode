@@ -22,6 +22,10 @@ def fix_column_name(n):
 
 
 def process_human_ratings_file(file_name, problem_num, solution_list, evaluator_features):
+    evaluator_feature_fields = ['Submission Date', 'Submission IP', 'Age', 'Gender',
+                                'exp_w_java', 'exp_w_py', 'exp_w_c', 'exp_w_cpp', 'exp_total',
+                                'Are you currently a student?']
+
     print_header = False
 
     features = pd.read_csv(file_name, na_filter=False)
@@ -31,7 +35,7 @@ def process_human_ratings_file(file_name, problem_num, solution_list, evaluator_
     if evaluator_features is None:
         print_header = True
 
-        evaluator_features = features.iloc[:, 0:10]
+        evaluator_features = features.loc[:, evaluator_feature_fields]
 
         # Call this here, before replacing the textual values with numeric values,
         # so the output is more easily human-readable
@@ -41,7 +45,7 @@ def process_human_ratings_file(file_name, problem_num, solution_list, evaluator_
         for column_name in columns_to_replace:
             evaluator_features[column_name].replace({'None': 0, '< 1': 1, '1 - 2': 2, '3 - 5': 3, '5 - 10': 4, '10+': 5}, inplace=True)
 
-    submission_info = features.loc[:, 'Submission Date':'Submission IP']
+    submission_info = features.loc[:, ['Submission Date','Submission IP']]
     solution_info = []
 
     for solnum in range(1, 6):
