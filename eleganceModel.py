@@ -123,10 +123,11 @@ def drop_unnecessary_columns(complexity_stats):
     # axis 1 refers to the columns
     # features = features.drop('actual', axis=1)
     columns_to_drop = ['averageOverall', 'filesource', 'filename', 'item_key', 'problem_num',
-                       'mm_fanout_internal', 'mm_pylint',
-                       'mm_tiobe_compiler', 'mm_tiobe_coverage', 'mm_tiobe_duplication', 'mm_tiobe_functional',
-                       'mm_tiobe_security', 'mm_tiobe_standard'
                        ]
+                       #'mm_fanout_internal', 'mm_pylint',
+                       #'mm_tiobe_compiler', 'mm_tiobe_coverage', 'mm_tiobe_duplication', 'mm_tiobe_functional',
+                       #'mm_tiobe_security', 'mm_tiobe_standard'
+                       #]
 
     return complexity_stats.drop(columns_to_drop, axis=1, errors='ignore')
 
