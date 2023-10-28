@@ -43,7 +43,7 @@ def process_human_ratings_file(file_name, problem_num, solution_list, evaluator_
 
         columns_to_replace = ['exp_w_java', 'exp_w_py', 'exp_w_c', 'exp_w_cpp', 'exp_total']
         for column_name in columns_to_replace:
-            evaluator_features[column_name].replace({'None': 0, '< 1': 1, '1 - 2': 2, '3 - 5': 3, '5 - 10': 4, '10+': 5}, inplace=True)
+            evaluator_features[column_name].replace({'None': 0, '< 1': 1, '1 - 2': 2, '3 - 5': 3, '5 - 10': 4, '10+': 5, '': 0}, inplace=True)
 
     submission_info = features.loc[:, ['Submission Date','Submission IP']]
     solution_info = []
