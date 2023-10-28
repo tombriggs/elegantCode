@@ -64,8 +64,8 @@ def process_human_ratings_file(file_name, problem_num, solution_list, evaluator_
         sol_features_plus_subinfo = pd.concat([submission_info, sol_features_only], axis=1)
         # Match evaluator info to evaluations by date and IP
         sol_features = pd.merge(sol_features_plus_subinfo, evaluator_features, how='inner',
-                                    left_on=['Submission Date', 'Submission IP'],
-                                    right_on=['Submission Date', 'Submission IP'])
+                                    left_on=['Submission IP'],
+                                    right_on=['Submission IP'])
 
         # Can't do anything without an overall rating...
         sol_features = sol_features[sol_features['Overall'] != '']
@@ -211,7 +211,6 @@ def validate_survey_responses(human_ratings_data, outfile_name_root):
 
             # Generate some sanity checks for the evaluations of this one program
             sanity_checks = pd.DataFrame()
-            sanity_checks['submission_date'] = df['Submission Date']
             sanity_checks['submission_ip'] = df['Submission IP']
             sanity_checks['avg_individual_scores'] = df[individual_dimensions].mean(axis=1)
             sanity_checks['stddev_individual_scores'] = df[individual_dimensions].std(axis=1)
