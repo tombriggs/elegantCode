@@ -9,7 +9,7 @@ from joblib import dump
 problem_complexities = {1: 5, 2: 5, 54: 10, 74: 15}
 
 
-def generate_elegance_model(human_ratings, complexity_stats_file, output_file_name_root):
+def generate_elegance_model(human_ratings, complexity_stats_file, output_file_name_root, test_train_random_seed):
     complexity_stats_raw = pd.read_csv(complexity_stats_file)
 
     # Generate a unique key for each file by combining the author/source and file name
@@ -63,7 +63,7 @@ def generate_elegance_model(human_ratings, complexity_stats_file, output_file_na
 
     # Split the data into training and testing sets
     train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size=0.20,
-                                                                                random_state=42)
+                                                                                random_state=test_train_random_seed)
 
     # Note to self: I think the baseline is simply 3 - i.e. the middle of the range of 1-5
     baseline_preds = np.full((1, len(test_labels)), 3)[0]
@@ -105,17 +105,20 @@ def generate_elegance_model(human_ratings, complexity_stats_file, output_file_na
         results_dict[average_field_name]['improvements_average'] = improvement_average
         #print("{} Improvement: {}, average {}".format(average_field_name, improvements, improvement_average))
 
-        #print_importances(average_field_name, rf, complexity_stats_list)
+        print_importances(average_field_name, rf, complexity_stats_list, test_train_random_seed)
 
         if output_file_name_root is not None:
             output_file_name = output_file_name_root + "_" + average_field_name + ".joblib"
             dump(rf, output_file_name)
 
+    outfile = open("improvements.csv", "a")
     print("\nImprovements")
     print("------------")
     for average_field_name in average_fields:
         print("{}: {}".format(average_field_name, results_dict[average_field_name]['improvements_average']))
+        print('{},"{}",{}'.format(test_train_random_seed, average_field_name, results_dict[average_field_name]['improvements_average']), file=outfile)
 
+    outfile.close()
 
 def drop_unnecessary_columns(complexity_stats):
     # Remove the labels, internal bookkeeping values,
@@ -132,18 +135,22 @@ def drop_unnecessary_columns(complexity_stats):
     return complexity_stats.drop(columns_to_drop, axis=1, errors='ignore')
 
 
-def print_importances(average_field_name, rf, field_list):
+def print_importances(average_field_name, rf, field_list, test_train_random_seed):
     # Get numerical feature importances
     importances = list(rf.feature_importances_)
 
     # List of tuples with variable and importance
     feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(field_list, importances)]
+    feature_importances = filter(lambda x: x[1] > 0.05, feature_importances)
 
     # Sort the feature importances by most important first
     feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
 
-    # Print out the feature and importances
+    # Print out the features and importances
     print("\nVariable Importance " + average_field_name)
     print("-----------------------")
     [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
+    outfile = open("importances.csv", "a")
+    [print('{},"{}","{}",{}'.format(test_train_random_seed, average_field_name, *pair), file=outfile) for pair in feature_importances]
 
+    outfile.close()

@@ -40,7 +40,7 @@ if __name__ == '__main__':
         print("or")
         print("\tpython elegantCode.py -h <human-ratings-dirname> <output file root>")
         print("or")
-        print("\tpython elegantCode.py -m <human-ratings-dirname> <complexity stats file> [model output file root]")
+        print("\tpython elegantCode.py -m <human-ratings-dirname> <complexity stats file> [model output file root] [test/train random seed]")
         sys.exit(1)
 
     run_mode = sys.argv[1]
@@ -61,6 +61,10 @@ if __name__ == '__main__':
         if num_args >= 5:
             output_file_name = sys.argv[4]
 
+        test_train_random_seed = 42
+        if num_args >= 6:
+            test_train_random_seed = int(sys.argv[5])
+
         human_ratings = processHumanRatings.process_human_ratings_dir(sys.argv[2])
-        eleganceModel.generate_elegance_model(human_ratings, sys.argv[3], output_file_name)
+        eleganceModel.generate_elegance_model(human_ratings, sys.argv[3], output_file_name, test_train_random_seed)
 
