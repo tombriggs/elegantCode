@@ -126,11 +126,20 @@ def drop_unnecessary_columns(complexity_stats):
     # axis 1 refers to the columns
     # features = features.drop('actual', axis=1)
     columns_to_drop = ['averageOverall', 'filesource', 'filename', 'item_key', 'problem_num',
+                       # features never reported as having an importance value
+                       # greater than 0.05 in any variant of the model
+                       #'empty_count', 'nloc_lizard', 'token_count',
+                       #'num_functions', 'min_func_cc',
+                       #'mm_fanout_internal', 'mm_halstead_bugprop', 'mm_halstead_difficulty',
+                       #'mm_halstead_effort', 'mm_halstead_timerequired', 'mm_halstead_volume',
+                       #'mm_loc', 'mm_maintainability_index', 'mm_operands_sum',
+                       #'mm_operands_uniq', 'mm_operators_sum', 'mm_operators_uniq',
+                       #'mm_pylint', '', 'mm_tiobe_compiler', '',
+                       #'mm_tiobe_coverage', 'mm_tiobe_duplication', '',
+                       #'mm_tiobe_functional', 'mm_tiobe_security', 'mm_tiobe_standard',
+                       #'problemComplexity'
                        ]
-                       #'mm_fanout_internal', 'mm_pylint',
-                       #'mm_tiobe_compiler', 'mm_tiobe_coverage', 'mm_tiobe_duplication', 'mm_tiobe_functional',
-                       #'mm_tiobe_security', 'mm_tiobe_standard'
-                       #]
+
 
     return complexity_stats.drop(columns_to_drop, axis=1, errors='ignore')
 
