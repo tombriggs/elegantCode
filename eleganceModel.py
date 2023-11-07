@@ -105,7 +105,7 @@ def generate_elegance_model(human_ratings, complexity_stats_file, output_file_na
         results_dict[average_field_name]['improvements_average'] = improvement_average
         #print("{} Improvement: {}, average {}".format(average_field_name, improvements, improvement_average))
 
-        print_importances(average_field_name, rf, complexity_stats_list, test_train_random_seed)
+        #print_importances(average_field_name, rf, complexity_stats_list, test_train_random_seed)
 
         if output_file_name_root is not None:
             output_file_name = output_file_name_root + "_" + average_field_name + ".joblib"
@@ -118,6 +118,15 @@ def generate_elegance_model(human_ratings, complexity_stats_file, output_file_na
         print("{}: {}".format(average_field_name, results_dict[average_field_name]['improvements_average']))
         print('{},"{}",{}'.format(test_train_random_seed, average_field_name, results_dict[average_field_name]['improvements_average']), file=outfile)
 
+    outfile.close()
+
+    outfile = open("performance.csv", "a")
+    for average_field_name in average_fields:
+        print('{},"{}",{},{}'.format(test_train_random_seed,
+                                  average_field_name,
+                                  results_dict[average_field_name]['error_average'],
+                                  results_dict[average_field_name]['baseline_error_average']),
+              file=outfile)
     outfile.close()
 
 def drop_unnecessary_columns(complexity_stats):
