@@ -249,3 +249,29 @@ def validate_survey_responses(human_ratings_data, outfile_name_root):
         outfile_corr_each_solution.close()
         outfile_corr_overall.close()
         outfile_misc.close()
+
+
+def write_human_ratings(human_ratings_data):
+    with open("humanRatings.csv", "w") as outfile:
+
+        write_header = True
+        problem_num = 1
+        global_solution_num = 1
+        for one_problem_ratings in human_ratings_data:
+            solution_num = 1
+            for one_solution_ratings in one_problem_ratings:
+                df = one_solution_ratings['features']
+
+                df['problem_num'] = problem_num
+                df['solution_num'] = solution_num
+                df['global_solution_num'] = global_solution_num
+
+                df.to_csv(outfile, header=write_header)
+
+                write_header = False
+                solution_num += 1
+                global_solution_num += 1
+
+            problem_num += 1
+
+        outfile.close()

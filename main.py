@@ -56,6 +56,7 @@ if __name__ == '__main__':
     elif run_mode == '-h':
         human_ratings_data = processHumanRatings.process_human_ratings_dir(sys.argv[2])
         processHumanRatings.validate_survey_responses(human_ratings_data, sys.argv[3])
+        processHumanRatings.write_human_ratings(human_ratings_data)
     elif run_mode == '-m':
         output_file_name = None
         if num_args >= 5:
