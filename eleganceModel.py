@@ -51,7 +51,7 @@ def generate_elegance_model(human_ratings, complexity_stats_file, output_file_na
     # labels = np.array(features['actual'])
     labels = np.array(complexity_stats['averageOverall'])
 
-    complexity_stats = drop_unnecessary_columns(complexity_stats)
+    #complexity_stats = drop_unnecessary_columns(complexity_stats)
 
     # Saving feature names for later use
     # feature_list = list(features.columns)
@@ -59,11 +59,17 @@ def generate_elegance_model(human_ratings, complexity_stats_file, output_file_na
 
     # Convert to numpy array
     # features = np.array(features)
-    features = np.array(complexity_stats)
+    #features = np.array(complexity_stats)
 
     # Split the data into training and testing sets
-    train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size=0.20,
+    train_features_orig, test_features_orig, train_labels, test_labels = train_test_split(complexity_stats, labels, test_size=0.20,
                                                                                 random_state=test_train_random_seed)
+
+    train_features2 = drop_unnecessary_columns(train_features_orig)
+    test_features2 = drop_unnecessary_columns(test_features_orig)
+
+    train_features = np.array(train_features2)
+    test_features = np.array(test_features2)
 
     # Note to self: I think the baseline is simply 3 - i.e. the middle of the range of 1-5
     baseline_preds = np.full((1, len(test_labels)), 3)[0]
@@ -85,6 +91,11 @@ def generate_elegance_model(human_ratings, complexity_stats_file, output_file_na
 
         # Use the forest's predict method on the test data
         predictions = rf.predict(test_features)
+
+        results_dict[average_field_name]['predictions'] = predictions
+        results_dict[average_field_name]['labels'] = test_labels_this_field
+        results_dict[average_field_name]['item_keys'] = test_features_orig['item_key'].to_list()
+        results_dict[average_field_name]['problem_num'] = test_features_orig['problem_num'].to_list()
 
         # Calculate the absolute errors
         errors = abs(predictions - test_labels_this_field)
@@ -126,6 +137,18 @@ def generate_elegance_model(human_ratings, complexity_stats_file, output_file_na
                                   average_field_name,
                                   results_dict[average_field_name]['error_average'],
                                   results_dict[average_field_name]['baseline_error_average']),
+              file=outfile)
+    outfile.close()
+
+    outfile = open("test_details.csv", "a")
+    for average_field_name in average_fields:
+        for i in range(len(results_dict[average_field_name]['item_keys'])):
+            print('{},"{}","{}","{}","{}","{}"'.format(test_train_random_seed,
+                                  average_field_name,
+                                  results_dict[average_field_name]['predictions'][i],
+                                  results_dict[average_field_name]['labels'][i],
+                                  results_dict[average_field_name]['item_keys'][i],
+                                  results_dict[average_field_name]['problem_num'][i]),
               file=outfile)
     outfile.close()
 
