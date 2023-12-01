@@ -1,5 +1,5 @@
 # Elegance in Code
-## UMass Darthmouth CIS600 Master's Project
+## UMass Dartmouth CIS600 Master's Project
 
 # Abstract
 Elegance is a more philosophical topic than those usually considered in the study of computer
